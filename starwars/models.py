@@ -10,11 +10,11 @@ class Race(models.Model):
     def __str__(self) -> str:
         return self.name
 
-class Jedi(models.Model):
+class Character(models.Model):
     name = models.TextField("Имя")
-    padavan = models.TextField("Падаван")
+    fraction = models.TextField("Фракция")
     race = models.ForeignKey("Race", on_delete=models.CASCADE, null=True)
 
     class Meta:
-        verbose_name = "Джедай"
-        verbose_name_plural = "Джедаи"
+        verbose_name = "Персонаж"
+        verbose_name_plural = "Персонажи"

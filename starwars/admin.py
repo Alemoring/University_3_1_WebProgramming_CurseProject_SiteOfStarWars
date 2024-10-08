@@ -1,11 +1,11 @@
 from django.contrib import admin
 
-from starwars.models import Jedi, Race
+from starwars.models import Character, Race
 
 # Register your models here.
-@admin.register(Jedi)
-class JediAdmin(admin.ModelAdmin):
-    list_display = ['name', 'padavan', 'race']
+@admin.register(Character)
+class CharacterAdmin(admin.ModelAdmin):
+    list_display = ['name', 'fraction', 'race']
 @admin.register(Race)
 class RaceAdmin(admin.ModelAdmin):
     list_display = ['name', 'homePlanet']
