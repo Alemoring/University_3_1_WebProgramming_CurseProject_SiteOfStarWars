@@ -23,9 +23,14 @@ class CharacterSerializer(serializers.ModelSerializer):
     fraction = FractionSerializer(read_only=True)
     class Meta:
         model = Character
-        fields = ['id', 'name', 'race', 'fraction']
+        fields = "__all__"
+
+class CharacterCreateSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Character
+        fields = "__all__"
 
 class StarshipSerializer(serializers.ModelSerializer):
     class Meta:
         model = Starship
-        fields = ['id', 'name', 'type', 'crew']
+        fields = "__all__"
