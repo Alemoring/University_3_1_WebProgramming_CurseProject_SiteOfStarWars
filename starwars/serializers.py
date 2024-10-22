@@ -17,6 +17,10 @@ class RaceSerializer(serializers.ModelSerializer):
     class Meta:
         model = Race
         fields = "__all__"
+class RaceCreateSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Race
+        fields = "__all__"
 
 class CharacterSerializer(serializers.ModelSerializer):
     race = RaceSerializer(read_only=True)

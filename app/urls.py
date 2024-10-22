@@ -20,12 +20,14 @@ from django.urls import include, path
 from starwars import views
 
 from rest_framework.routers import DefaultRouter
-from starwars.api import CharactersViewset, StarshipViewset, RaceViewset
+from starwars.api import CharactersViewset, StarshipViewset, RaceViewset, PlanetViewSet, FractionViewSet
 
 router = DefaultRouter()
 router.register("characters", CharactersViewset, basename="Characters")
 router.register("starships", StarshipViewset, basename="Starships")
 router.register("races", RaceViewset, basename="Races")
+router.register("planets", PlanetViewSet, basename="Planets")
+router.register("fractions", FractionViewSet, basename="Fractions")
 
 urlpatterns = [
     path('', views.ShowCharactersView.as_view()),
