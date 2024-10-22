@@ -38,3 +38,7 @@ class StarshipSerializer(serializers.ModelSerializer):
     class Meta:
         model = Starship
         fields = "__all__"
+class StarshipDeleteSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Starship
+        fields = "__all__"

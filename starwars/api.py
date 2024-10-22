@@ -2,7 +2,7 @@ from rest_framework.viewsets import GenericViewSet
 from rest_framework import mixins, viewsets
 
 from starwars.models import Character, Starship, Race, Fraction, Planet
-from starwars.serializers import CharacterSerializer, StarshipSerializer, CharacterCreateSerializer
+from starwars.serializers import CharacterSerializer, StarshipDeleteSerializer, StarshipSerializer, CharacterCreateSerializer
 from starwars.serializers import RaceSerializer, RaceCreateSerializer, FractionSerializer, PlanetSerializer
 
 class CharactersViewset(mixins.ListModelMixin, 
@@ -27,6 +27,10 @@ class StarshipViewset(mixins.ListModelMixin,
                         mixins.DestroyModelMixin, ):
     queryset = Starship.objects.all()
     serializer_class = StarshipSerializer
+    def get_serializer_class(self):
+        if self.action == "create" or self.action == "delete":
+            return StarshipDeleteSerializer
+        return self.serializer_class
 
 class RaceViewset(mixins.ListModelMixin, 
                         mixins.CreateModelMixin, 

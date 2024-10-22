@@ -159,58 +159,54 @@ class RacesViewsetTestCase(TestCase):
 
     def test_create_race(self):
         plnt = baker.make("Planet")
-        frc = baker.make("Fraction")
-        rc = baker.make("Race", homePlanet=plnt)
 
-        r = self.client.post("/api/characters/", {
+        r = self.client.post("/api/races/", {
             "name" : "Лишний",
-            "fraction" : frc.id,
-            "race" : rc.id
+            "homePlanet" : plnt.id
         })
 
-        new_character_id = r.json()['id']
+        new_race_id = r.json()['id']
 
-        characters = Character.objects.all()
-        assert len(characters) == 1
+        races = Race.objects.all()
+        assert len(races) == 1
 
-        new_character = Character.objects.filter(id=new_character_id).first()
-        assert new_character.name == 'Лишний'
-        assert new_character.fraction == frc
-        assert new_character.race == rc
+        new_race = Race.objects.filter(id=new_race_id).first()
+        assert new_race.name == 'Лишний'
+        assert new_race.homePlanet == plnt
 
     def test_delete_race(self):
-        characters = baker.make("Character", 10)
-        r = self.client.get('/api/characters/')
+        races = baker.make("Race", 10)
+        r = self.client.get('/api/races/')
         data = r.json()
         assert len(data) == 10
 
-        character_id_to_delete = characters[3].id
-        self.client.delete(f'/api/characters/{character_id_to_delete}/')
+        race_id_to_delete = races[3].id
+        self.client.delete(f'/api/races/{race_id_to_delete}/')
 
-        r = self.client.get('/api/characters/')
+        r = self.client.get('/api/races/')
         data = r.json()
 
-        assert character_id_to_delete not in [i['id'] for i in data]
+        assert race_id_to_delete not in [i['id'] for i in data]
 
     def test_update_race(self):
-        characters = baker.make("Character", 10)
-        character : Character = characters[2]
+        races = baker.make("Race", 10)
+        race : Race = races[2]
 
-        r = self.client.get(f'/api/characters/{character.id}/')
+        r = self.client.get(f'/api/races/{race.id}/')
         data = r.json()
-        assert data['name'] == character.name
+        assert data['name'] == race.name
 
-        r = self.client.put(f'/api/characters/{character.id}/', {
+        r = self.client.put(f'/api/races/{race.id}/', {
             "name" : "Петр Петров"
         })
         assert r.status_code == 200
         
-        r = self.client.get(f'/api/characters/{character.id}/')
+        r = self.client.get(f'/api/races/{race.id}/')
         data = r.json()
         assert data['name'] == "Петр Петров"
 
-        character.refresh_from_db()
-        assert data['name'] == character.name
+        race.refresh_from_db()
+        assert data['name'] == race.name
 
 class FractionsViewsetTestCase(TestCase):
     def setUp(self):
@@ -282,71 +278,63 @@ class StarShipsViewsetTestCase(TestCase):
         self.client = APIClient()
 
     def test_get_list(self):
-        plnt = baker.make("Planet")
-        frc = baker.make("Fraction")
-        rc = baker.make("Race", homePlanet=plnt)
-        persona = baker.make("Character", fraction=frc, race=rc)
+        star_ship = baker.make("Starship")
 
-        r = self.client.get('/api/characters/')
+        r = self.client.get('/api/starships/')
         data = r.json()
 
-        assert persona.name == data[0]['name']
-        assert persona.id == data[0]['id']
-        assert persona.fraction.id == data[0]['fraction']['id']
-        assert persona.race.id == data[0]['race']['id']
-        assert persona.race.homePlanet.id == data[0]['race']['homePlanet']['id']
+        assert star_ship.name == data[0]['name']
+        assert star_ship.crew == data[0]['crew']
+        assert star_ship.type == data[0]['type']
+        assert star_ship.id == data[0]['id']
 
     def test_create_starshp(self):
-        plnt = baker.make("Planet")
-        frc = baker.make("Fraction")
-        rc = baker.make("Race", homePlanet=plnt)
-
-        r = self.client.post("/api/characters/", {
+        r = self.client.post("/api/starships/", {
             "name" : "Лишний",
-            "fraction" : frc.id,
-            "race" : rc.id
+            "type" : "Какой-то",
+            "crew" : "Кто-то"
         })
 
-        new_character_id = r.json()['id']
+        new_star_ship_id = r.json()['id']
 
-        characters = Character.objects.all()
-        assert len(characters) == 1
+        star_ships = Starship.objects.all()
+        assert len(star_ships) == 1
 
-        new_character = Character.objects.filter(id=new_character_id).first()
-        assert new_character.name == 'Лишний'
-        assert new_character.fraction == frc
-        assert new_character.race == rc
+        new_star_ship = Starship.objects.filter(id=new_star_ship_id).first()
+        assert new_star_ship.name == 'Лишний'
+        assert new_star_ship.crew == "Кто-то"
+        assert new_star_ship.type == "Какой-то"
 
     def test_delete_starship(self):
-        characters = baker.make("Character", 10)
-        r = self.client.get('/api/characters/')
+        star_ships = baker.make("Starship", 10)
+        r = self.client.get('/api/starships/')
         data = r.json()
         assert len(data) == 10
 
-        character_id_to_delete = characters[3].id
-        self.client.delete(f'/api/characters/{character_id_to_delete}/')
+        star_ship_id_to_delete = star_ships[3].id
+        self.client.delete(f'/api/starships/{star_ship_id_to_delete}/')
 
-        r = self.client.get('/api/characters/')
+        r = self.client.get('/api/starships/')
         data = r.json()
 
-        assert character_id_to_delete not in [i['id'] for i in data]
+        assert star_ship_id_to_delete not in [i['id'] for i in data]
 
     def test_update_starship(self):
-        characters = baker.make("Character", 10)
-        character : Character = characters[2]
+        star_ships = baker.make("Starship", 10)
+        star_ship : Starship = star_ships[2]
 
-        r = self.client.get(f'/api/characters/{character.id}/')
+        r = self.client.get(f'/api/starships/{star_ship.id}/')
         data = r.json()
-        assert data['name'] == character.name
+        assert data['name'] == star_ship.name
 
-        r = self.client.put(f'/api/characters/{character.id}/', {
+        r = self.client.put(f'/api/starships/{star_ship.id}/', {
             "name" : "Петр Петров"
         })
         assert r.status_code == 200
         
-        r = self.client.get(f'/api/characters/{character.id}/')
+        r = self.client.get(f'/api/starships/{star_ship.id}/')
         data = r.json()
         assert data['name'] == "Петр Петров"
 
-        character.refresh_from_db()
-        assert data['name'] == character.name
+        star_ship.refresh_from_db()
+        assert data['name'] == star_ship.name
