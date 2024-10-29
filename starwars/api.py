@@ -53,6 +53,7 @@ class FractionViewSet(mixins.ListModelMixin,
                         mixins.DestroyModelMixin, ):
     queryset = Fraction.objects.all()
     serializer_class = FractionSerializer
+    
 
 class PlanetViewSet(mixins.ListModelMixin, 
                         mixins.CreateModelMixin, 

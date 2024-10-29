@@ -131,7 +131,8 @@ class PlanetsViewsetTestCase(TestCase):
         assert data['name'] == planet.name
 
         r = self.client.put(f'/api/planets/{planet.id}/', {
-            "name" : "Петр Петров"
+            "name" : "Петр Петров",
+            "population" : planet.population
         })
         assert r.status_code == 200
         
@@ -262,7 +263,8 @@ class FractionsViewsetTestCase(TestCase):
         assert data['name'] == fraction.name
 
         r = self.client.put(f'/api/fractions/{fraction.id}/', {
-            "name" : "Как-то"
+            "name" : "Петр Петров",
+            "periodInLive" : fraction.periodInLive
         })
         assert r.status_code == 200
         
@@ -328,7 +330,9 @@ class StarShipsViewsetTestCase(TestCase):
         assert data['name'] == star_ship.name
 
         r = self.client.put(f'/api/starships/{star_ship.id}/', {
-            "name" : "Петр Петров"
+            "name" : "Петр Петров",
+            "type" : star_ship.type,
+            "crew" : star_ship.crew
         })
         assert r.status_code == 200
         
