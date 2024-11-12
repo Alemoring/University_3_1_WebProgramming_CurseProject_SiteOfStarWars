@@ -1,7 +1,19 @@
 <script setup>
 import {computed, onBeforeMount, ref } from 'vue'
 import axios from "axios"
-import Cookies from 'js-cookie';
+import Cookies from 'js-cookie'
+import About from './views/AboutView.vue'
+
+const routes = {
+  '/about' : About
+}
+const currentPath = ref(window.location.hash)
+window.addEventListener('hashchange', () => {
+  currentPath.value = window.location.hash
+})
+const currentView = computed(() => {
+  return routes[currentPath.value.slice(1) || '/' || NotFound ]
+})
 
 const characters = ref([])
 const races = ref([])
@@ -58,26 +70,26 @@ onBeforeMount(async () => {
 <template>
   <nav class="navbar navbar-expand-lg bg-body-tertiary">
     <div class="collapse navbar-collapse justify-content-between" id="navbarNavDropdown">
-      <a class="navbar-brand" href="#">Главная</a>
+      <a class="navbar-brand" href="/">Главная</a>
       <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Переключатель навигации">
         <span class="navbar-toggler-icon"></span>
       </button>
       <div class="collapse navbar-collapse" id="navbarSupportedContent">
         <ul class="navbar-nav me-auto mb-2 mb-lg-0">
           <li class="nav-item">
-            <a class="nav-link" aria-current="page" href="#">Персонажи</a>
+            <a class="nav-link" aria-current="page" href="/">Персонажи</a>
           </li>
           <li class="nav-item">
-            <a class="nav-link" href="#">Рассы</a>
+            <a class="nav-link" href="#/about">Рассы</a>
           </li>
           <li class="nav-item">
-            <a class="nav-link" href="#">Фракции</a>
+            <a class="nav-link" href="/fractions">Фракции</a>
           </li>
           <li class="nav-item">
-            <a class="nav-link" href="#">Планеты</a>
+            <a class="nav-link" href="/planets">Планеты</a>
           </li>
           <li class="nav-item">
-            <a class="nav-link" href="#">Корабли</a>
+            <a class="nav-link" href="/starships">Корабли</a>
           </li>
         </ul>
       </div>
@@ -90,7 +102,9 @@ onBeforeMount(async () => {
         </li>
       </ul>
     </div>
-  </nav>  
+  </nav> 
+  
+  <component :is="currentView" />
 
   <div>
     <div v-for="item in characters" class="character-item">
