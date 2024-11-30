@@ -35,6 +35,8 @@ class Character(models.Model):
     fraction = models.ForeignKey("Fraction", on_delete=models.CASCADE, null=True)
     race = models.ForeignKey("Race", on_delete=models.CASCADE, null=True)
 
+    picture = models.ImageField("Изображение", null = True, upload_to="characters")
+
     class Meta:
         verbose_name = "Персонаж"
         verbose_name_plural = "Персонажи"
@@ -43,6 +45,7 @@ class Starship(models.Model):
     name = models.TextField("Название")
     type = models.TextField("Тип корабля")
     crew = models.TextField("Экипаж корабля")
+    picture = models.ImageField("Изображение", null = True, upload_to="starships")
 
     class Meta:
         verbose_name = "Звёздный корабль"

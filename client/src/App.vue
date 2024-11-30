@@ -5,8 +5,9 @@
 <template>
   <nav class="navbar navbar-expand-lg bg-body-tertiary">
     <div class="collapse navbar-collapse justify-content-between" id="navbarNavDropdown">
-      <a class="navbar-brand" href="/">Главная</a>
-      <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Переключатель навигации">
+      <a class="navbar-brand ms-4" href="/">Главная</a>
+      <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarSupportedContent"
+        aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Переключатель навигации">
         <span class="navbar-toggler-icon"></span>
       </button>
       <div class="collapse navbar-collapse" id="navbarSupportedContent">
@@ -28,19 +29,20 @@
           </li>
         </ul>
       </div>
-      <ul class="navbar-nav">
+      <ul class="navbar-nav me-4">
         <li class="nav-item dropdown">
           <a class="nav-link dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown">Пользователь</a>
-            <ul class="dropdown-menu">
-              <li><RouterLink class="dropdown-item" to="/admin"> Админка </RouterLink></li>
-            </ul>
+          <ul class="dropdown-menu">
+            <li><a class="dropdown-item" href="/admin">Админка</a></li>
+          </ul>
         </li>
       </ul>
     </div>
   </nav>
+  <div class="m-4">
+    <RouterView />
+  </div>
 
-  <RouterView />
-  
 </template>
 
 <style scoped></style>
