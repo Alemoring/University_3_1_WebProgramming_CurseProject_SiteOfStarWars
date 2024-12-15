@@ -5,6 +5,8 @@ class Fraction(models.Model):
     name = models.TextField("Название")
     periodInLive = models.TextField("Период существования")
 
+    user = models.ForeignKey("auth.User", verbose_name="Пользователь", on_delete=models.CASCADE, null=True)
+
     class Meta:
         verbose_name = "Фракция"
         verbose_name_plural = "Фракции"
@@ -15,6 +17,8 @@ class Planet(models.Model):
     name = models.TextField("Название")
     population = models.TextField("Популяция")
 
+    user = models.ForeignKey("auth.User", verbose_name="Пользователь", on_delete=models.CASCADE, null=True)
+
     class Meta:
         verbose_name = "Планета"
         verbose_name_plural = "Планеты"
@@ -24,6 +28,8 @@ class Planet(models.Model):
 class Race(models.Model):
     name = models.TextField("Название")
     homePlanet = models.ForeignKey("Planet", on_delete=models.CASCADE, null=True)
+
+    user = models.ForeignKey("auth.User", verbose_name="Пользователь", on_delete=models.CASCADE, null=True)
     class Meta:
         verbose_name = "Расса"
         verbose_name_plural = "Рассы"
@@ -37,6 +43,8 @@ class Character(models.Model):
 
     picture = models.ImageField("Изображение", null = True, upload_to="characters")
 
+    user = models.ForeignKey("auth.User", verbose_name="Пользователь", on_delete=models.CASCADE, null=True)
+
     class Meta:
         verbose_name = "Персонаж"
         verbose_name_plural = "Персонажи"
@@ -45,7 +53,10 @@ class Starship(models.Model):
     name = models.TextField("Название")
     type = models.TextField("Тип корабля")
     crew = models.TextField("Экипаж корабля")
+
     picture = models.ImageField("Изображение", null = True, upload_to="starships")
+
+    user = models.ForeignKey("auth.User", verbose_name="Пользователь", on_delete=models.CASCADE, null=True)
 
     class Meta:
         verbose_name = "Звёздный корабль"

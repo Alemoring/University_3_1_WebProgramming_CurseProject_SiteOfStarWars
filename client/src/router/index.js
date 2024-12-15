@@ -4,6 +4,7 @@ import { createRouter, createWebHistory } from 'vue-router'
 import PlanetView from '@/views/PlanetView.vue'
 import StarshipView from '@/views/StarshipView.vue'
 import FractionView from '../views/FractionView.vue'
+import LogInView from '@/views/LogInView.vue'
 
 const router = createRouter({
   history: createWebHistory(import.meta.env.BASE_URL),
@@ -37,6 +38,11 @@ const router = createRouter({
       path:'/admin',
       name:'admin',
       component: RaceView
+    },
+    {
+      path:'/login',
+      name:'login',
+      component: LogInView
     }
   ]
 })

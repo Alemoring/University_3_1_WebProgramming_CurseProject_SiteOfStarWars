@@ -2,6 +2,16 @@
 import { computed, onBeforeMount, ref } from 'vue'
 import axios from "axios"
 import Cookies from 'js-cookie'
+import {storeToRefs} from "pinia"
+import useUserProfileStore from '@/stores/UserProfileStore'
+
+
+
+ const userProfileStore = useUserProfileStore()
+const{
+	is_authenticated,
+	username
+} = storeToRefs(userProfileStore)  
 
 const characters = ref([])
 const characterPictureRef = ref()
@@ -16,6 +26,7 @@ const characterToEdit = ref({})
 async function fetchCharacters() {
   const r1 = await axios.get("/api/characters/")
   characters.value = r1.data
+  console.log(characters)
   const r2 = await axios.get("/api/races/")
   races.value = r2.data
   const r3 = await axios.get("/api/fractions/")
@@ -79,7 +90,6 @@ async function onUpdateCharacter() {
 
 async function onCharacterAdd() {
   const formData = new FormData()
-  console.log(characterPictureRef.value.files[0])
   formData.set('name', characterToAdd.value.name)
   formData.set("race", characterToAdd.value.race)
   formData.set("fraction", characterToAdd.value.fraction)
@@ -118,6 +128,7 @@ onBeforeMount(async () => {
 </script>
 
 <template>
+  <div>{{ userProfileStore.username }}</div>  
   <div class="row">
     <div v-for="item in characters" class="character-item card m-2" style="width: 18rem;">
       <div v-show="item.picture" class="mt-3 mb-2" style="margin-left: auto; margin-right: auto;"><img :src="item.picture"

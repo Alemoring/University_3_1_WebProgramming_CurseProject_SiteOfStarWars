@@ -1,5 +1,19 @@
 <script setup>
+import axios from "axios"
+import { computed, onBeforeMount, ref } from 'vue'
+import useUserProfileStore from '@/stores/UserProfileStore'
+import { storeToRefs } from "pinia"
 
+const userProfileStore = useUserProfileStore()
+const {
+  is_authenticated,
+  username
+} = storeToRefs(userProfileStore)
+console.log(useUserProfileStore)
+async function onClick() {
+  await axios.post("/accounts/logout/")
+  document.location.reload()
+}
 </script>
 
 <template>
@@ -30,16 +44,22 @@
         </ul>
       </div>
       <ul class="navbar-nav me-4">
+        <li>
+          <div class="nav-link">{{ userProfileStore.username }}</div>
+        </li>
         <li class="nav-item dropdown">
           <a class="nav-link dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown">Пользователь</a>
           <ul class="dropdown-menu">
             <li><a class="dropdown-item" href="/admin">Админка</a></li>
+            <li><RouterLink class="dropdown-item" to="/login"> Вход </RouterLink></li>
+            <li><button class="dropdown-item" @click="onClick()">Выход</button></li>
           </ul>
         </li>
       </ul>
     </div>
   </nav>
   <div class="m-4">
+
     <RouterView />
   </div>
 

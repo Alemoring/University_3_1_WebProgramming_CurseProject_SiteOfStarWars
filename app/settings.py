@@ -40,6 +40,7 @@ INSTALLED_APPS = [
 
     'rest_framework',
     'django_cleanup',
+    'corsheaders',
 
     'starwars',
 ]
@@ -52,6 +53,10 @@ MIDDLEWARE = [
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
+
+    'starwars.middleware.DisableCSRFForCertainHosts',
+    'django.middleware.csrf.CsrfViewMiddleware',
+    'corsheaders.middleware.CorsMiddleware',
 ]
 
 ROOT_URLCONF = 'app.urls'
@@ -122,6 +127,8 @@ USE_TZ = True
 # Static files (CSS, JavaScript, Images)
 # https://docs.djangoproject.com/en/5.1/howto/static-files/
 
+LOGIN_REDIRECT_URL = '/'
+
 STATIC_URL = 'static/'
 MEDIA_ROOT = BASE_DIR / "media"
 MEDIA_URL = "/media/"
@@ -130,3 +137,7 @@ MEDIA_URL = "/media/"
 # https://docs.djangoproject.com/en/5.1/ref/settings/#default-auto-field
 
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
+
+CORS_ALLOWED_ORIGINS = [
+    "http://localhost:5173",  # Ваш фронтенд 
+]
