@@ -5,8 +5,6 @@ import Cookies from 'js-cookie'
 import { storeToRefs } from "pinia"
 import useUserProfileStore from '@/stores/UserProfileStore'
 
-
-
 const userProfileStore = useUserProfileStore()
 const {
   is_authenticated,
@@ -28,8 +26,15 @@ const fractions = ref([])
 const characterToAdd = ref({})
 const characterToEdit = ref({})
 
-async function fetchCharacters() {
-  const r1 = await axios.get("/api/characters/")
+const statistics = ref([]) 
+
+async function fetchCharacters(user) {
+  var r1
+  if(user != null){
+    r1 = await axios.get("/api/characters/?username="+user)
+  }else{
+    r1 = await axios.get("/api/characters/")
+  }
   characters.value = r1.data
   const r2 = await axios.get("/api/races/")
   races.value = r2.data
@@ -37,12 +42,14 @@ async function fetchCharacters() {
   fractions.value = r3.data
   const r4 = await axios.get("/api/users/")
   users.value = r4.data
+  const r5 = await axios.get("/api/characters/stats/")
+  statistics.value = r5.data
 }
 
 async function onFilterUser(user) {
   await fetchCharacters()
   if (user != -1) {
-    characters.value = characters.value.filter((item) => item.user == user + 1)
+    await fetchCharacters(user + 1)
   }
 }
 
@@ -142,7 +149,7 @@ onBeforeMount(async () => {
 
 <template>
   <div class="row">
-    <div class="col-1 ">
+    <div class="col-auto ">
       <div v-if="userProfileStore.is_superuser" class="form-floating">
         <select id="floatingSelect" class="form-select" v-model="userFilter"
           @change="onFilterUser(users.findIndex((item) => item.username == userFilter.username))">
@@ -152,6 +159,12 @@ onBeforeMount(async () => {
         <label for="floatingSelect">Юзер</label>
       </div>
     </div>
+  </div>
+  <div class="row mt-2 mb-2">
+    <div class="col-auto border border-dark">Количество записей: {{ statistics.count }}</div>
+    <div class="col-auto border border-dark">Среднее id в записях: {{ statistics.avg }}</div>
+    <div class="col-auto border border-dark"> Минимальное id в записях:{{ statistics.min }}</div>
+    <div class="col-auto border border-dark"> Максимальное id в записях: {{ statistics.max }}</div>
   </div>
   <div class="row">
     <div v-for="item in characters" class="character-item card m-2" style="width: 18rem;">

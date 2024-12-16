@@ -5,6 +5,8 @@ import Cookies from 'js-cookie'
 import { storeToRefs } from "pinia"
 import useUserProfileStore from '@/stores/UserProfileStore'
 
+const userFilter = ref()
+
 const starships = ref([])
 const starshipToAdd = ref({})
 const starshipToEdit = ref({})
@@ -13,6 +15,10 @@ const starshipPictureEditRef = ref()
 const starshipAddImageURL = ref()
 const starshipEditImageURL = ref()
 
+const statistics = ref([])
+
+const users = ref([])
+
 const userProfileStore = useUserProfileStore()
 const{
 	is_authenticated,
@@ -20,9 +26,25 @@ const{
 	username
 } = storeToRefs(userProfileStore) 
 
-async function fetchStarships() {
-  const r = await axios.get('/api/starships/')
+async function fetchStarships(user) {
+  var r
+  if(user != null){
+    r = await axios.get("/api/starships/?username="+user)
+  }else{
+    r = await axios.get("/api/starships/")
+  }
   starships.value = r.data
+  const r2 = await axios.get("/api/starships/stats/")
+  statistics.value = r2.data
+  const r3 = await axios.get("/api/users/")
+  users.value = r3.data
+}
+
+async function onFilterUser(user) {
+  await fetchStarships()
+  if (user != -1) {
+    await fetchStarships(user + 1)
+  }
 }
 
 async function starshipsAddPictureChange() {
@@ -122,12 +144,31 @@ onBeforeMount(async () => {
 
 <template>
   <div class="row">
+    <div class="col-auto ">
+      <div v-if="userProfileStore.is_superuser" class="form-floating">
+        <select id="floatingSelect" class="form-select" v-model="userFilter"
+          @change="onFilterUser(users.findIndex((item) => item.username == userFilter.username))">
+          <option selected>Все</option>
+          <option v-for="n in users" :value="n">{{ n.username }}</option>
+        </select>
+        <label for="floatingSelect">Юзер</label>
+      </div>
+    </div>
+  </div>
+  <div class="row mt-2 mb-2">
+    <div class="col-auto border border-dark">Количество записей: {{ statistics.count }}</div>
+    <div class="col-auto border border-dark">Среднее id в записях: {{ statistics.avg }}</div>
+    <div class="col-auto border border-dark"> Минимальное id в записях:{{ statistics.min }}</div>
+    <div class="col-auto border border-dark"> Максимальное id в записях: {{ statistics.max }}</div>
+  </div>
+  <div class="row">
     <div v-for="item in starships" class="starship-item card m-2" style="width: 18rem;">
       <div v-show="item.picture" class="mt-3 mb-2" style="margin-left: auto; margin-right: auto;"><img :src="item.picture"
         style="max-height: 200px; width: 16rem; border: 2px solid black; box-shadow: 0px 0px 5px 5px rgba(0, 0, 0, 0.4);" alt=""></div>
       <div class="card-title ms-4">Название: {{ item.name }}</div>
       <div class="card-text ms-4">Тип: {{ item.type }}</div>
       <div class="card-text ms-4">Команда: {{ item.crew }}</div>
+      <div v-if="userProfileStore.is_superuser" class="card-text ms-4">Юзер: {{ users[item.user - 1].username }}</div>
       <div class="mt-2 mb-2 ms-4 me-4" style="display: flex; justify-content: space-between;">
         <button class="btn btn-success btn" @click="onStarshipEditClick(item)" data-bs-toggle="modal"
           data-bs-target="#editStarshipModal">

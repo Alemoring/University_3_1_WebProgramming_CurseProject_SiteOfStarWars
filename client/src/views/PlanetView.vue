@@ -7,9 +7,13 @@ const planets = ref([])
 const planetToAdd = ref({})
 const planetToEdit = ref({})
 
+const statistics = ref([])
+
 async function fetchPlanets() {
   const r = await axios.get('/api/planets/')
   planets.value = r.data
+  const r2 = await axios.get('/api/planets/stats/')
+  statistics.value = r2.data
 }
 
 async function onPlanetEditClick(planet) {
@@ -47,6 +51,12 @@ onBeforeMount(async () => {
 </script>
 
 <template>
+  <div class="row mt-2 mb-2">
+    <div class="col-auto border border-dark">Количество записей: {{ statistics.count }}</div>
+    <div class="col-auto border border-dark">Среднее id в записях: {{ statistics.avg }}</div>
+    <div class="col-auto border border-dark"> Минимальное id в записях:{{ statistics.min }}</div>
+    <div class="col-auto border border-dark"> Максимальное id в записях: {{ statistics.max }}</div>
+  </div>
   <div class="row">
     <div v-for="item in planets" class="planet-item card m-2" style="width: 18rem;">
       <div class="card-title ms-4">Название: {{ item.name }}</div>

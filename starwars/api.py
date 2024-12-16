@@ -2,10 +2,12 @@ from rest_framework.response import Response
 from rest_framework.viewsets import GenericViewSet
 from rest_framework import mixins, viewsets
 from rest_framework.decorators import action
+from rest_framework import serializers
 from starwars.models import Character, Starship, Race, Fraction, Planet
 from starwars.serializers import CharacterSerializer, StarshipDeleteSerializer, StarshipSerializer, CharacterCreateSerializer, UserSerializer
 from starwars.serializers import RaceSerializer, RaceCreateSerializer, FractionSerializer, PlanetSerializer
 from django.contrib.auth.models import User
+from django.db.models import Avg, Count, Min, Max
 
 class UserProfileViewSet(GenericViewSet):
 	@action(url_path="info", detail=False, methods=["GET"])
@@ -40,12 +42,31 @@ class CharactersViewset(mixins.ListModelMixin,
     def get_queryset(self):
         qs = super().get_queryset()
         
-        # фильтруем по текущему юзеру
+        # Фильтрация по юзеру с помощью параметров url
+        username = self.request.query_params.get('username')
+        if username is not None:
+            qs = qs.filter(user=username)
+        # фильтруем по текущему юзеру, если текущий пользователь не супер
         user = self.request.user
         if user.is_superuser == False:
             qs = qs.filter(user=self.request.user)
-
         return qs
+    class StatsSerializer(serializers.Serializer):
+        count = serializers.IntegerField()
+        avg = serializers.FloatField()
+        max = serializers.IntegerField()
+        min = serializers.IntegerField()
+    @action(detail=False, methods=["GET"], url_path="stats")
+    def get_stats(self, request, *args, **kwargs):
+        stats = Character.objects.aggregate(
+            count=Count("*"),
+            avg=Avg("id"),
+            max=Max("id"),
+            min=Min("id")
+        )
+        print(stats)
+        serializer = self.StatsSerializer(instance=stats)
+        return Response(serializer.data)
     
 
 class StarshipViewset(mixins.ListModelMixin, 
@@ -63,12 +84,31 @@ class StarshipViewset(mixins.ListModelMixin,
     def get_queryset(self):
         qs = super().get_queryset()
         
-        # фильтруем по текущему юзеру
+        # Фильтрация по юзеру с помощью параметров url
+        username = self.request.query_params.get('username')
+        if username is not None:
+            qs = qs.filter(user=username)
+        # фильтруем по текущему юзеру, если текущий пользователь не супер
         user = self.request.user
         if user.is_superuser == False:
             qs = qs.filter(user=self.request.user)
-
         return qs
+    class StatsSerializer(serializers.Serializer):
+        count = serializers.IntegerField()
+        avg = serializers.FloatField()
+        max = serializers.IntegerField()
+        min = serializers.IntegerField()
+    @action(detail=False, methods=["GET"], url_path="stats")
+    def get_stats(self, request, *args, **kwargs):
+        stats = Starship.objects.aggregate(
+            count=Count("*"),
+            avg=Avg("id"),
+            max=Max("id"),
+            min=Min("id")
+        )
+        print(stats)
+        serializer = self.StatsSerializer(instance=stats)
+        return Response(serializer.data)
 
 class RaceViewset(mixins.ListModelMixin, 
                         mixins.CreateModelMixin, 
@@ -85,6 +125,22 @@ class RaceViewset(mixins.ListModelMixin,
     def get_queryset(self):
         qs = super().get_queryset()
         return qs
+    class StatsSerializer(serializers.Serializer):
+        count = serializers.IntegerField()
+        avg = serializers.FloatField()
+        max = serializers.IntegerField()
+        min = serializers.IntegerField()
+    @action(detail=False, methods=["GET"], url_path="stats")
+    def get_stats(self, request, *args, **kwargs):
+        stats = Race.objects.aggregate(
+            count=Count("*"),
+            avg=Avg("id"),
+            max=Max("id"),
+            min=Min("id")
+        )
+        print(stats)
+        serializer = self.StatsSerializer(instance=stats)
+        return Response(serializer.data)
 
 class FractionViewSet(mixins.ListModelMixin, 
                         mixins.CreateModelMixin, 
@@ -96,11 +152,23 @@ class FractionViewSet(mixins.ListModelMixin,
     serializer_class = FractionSerializer
     def get_queryset(self):
         qs = super().get_queryset()
-        
-        # фильтруем по текущему юзеру
-        
-
         return qs
+    class StatsSerializer(serializers.Serializer):
+        count = serializers.IntegerField()
+        avg = serializers.FloatField()
+        max = serializers.IntegerField()
+        min = serializers.IntegerField()
+    @action(detail=False, methods=["GET"], url_path="stats")
+    def get_stats(self, request, *args, **kwargs):
+        stats = Fraction.objects.aggregate(
+            count=Count("*"),
+            avg=Avg("id"),
+            max=Max("id"),
+            min=Min("id")
+        )
+        print(stats)
+        serializer = self.StatsSerializer(instance=stats)
+        return Response(serializer.data)
     
 
 class PlanetViewSet(mixins.ListModelMixin, 
@@ -113,8 +181,20 @@ class PlanetViewSet(mixins.ListModelMixin,
     serializer_class = PlanetSerializer
     def get_queryset(self):
         qs = super().get_queryset()
-        
-        # фильтруем по текущему юзеру
-        
-
         return qs
+    class StatsSerializer(serializers.Serializer):
+        count = serializers.IntegerField()
+        avg = serializers.FloatField()
+        max = serializers.IntegerField()
+        min = serializers.IntegerField()
+    @action(detail=False, methods=["GET"], url_path="stats")
+    def get_stats(self, request, *args, **kwargs):
+        stats = Planet.objects.aggregate(
+            count=Count("*"),
+            avg=Avg("id"),
+            max=Max("id"),
+            min=Min("id")
+        )
+        print(stats)
+        serializer = self.StatsSerializer(instance=stats)
+        return Response(serializer.data)

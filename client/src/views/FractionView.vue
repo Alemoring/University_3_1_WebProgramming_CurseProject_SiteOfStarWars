@@ -7,9 +7,13 @@ const fractions = ref([])
 const fractionToAdd = ref({})
 const fractionToEdit = ref({})
 
+const statistics = ref([]) 
+
 async function fetchFractions() {
   const r = await axios.get('/api/fractions/')
   fractions.value = r.data
+  const r2 = await axios.get("/api/fractions/stats/")
+  statistics.value = r2.data
 }
 
 async function onFractionEditClick(fraction) {
@@ -47,6 +51,12 @@ onBeforeMount(async () => {
 </script>
 
 <template>
+  <div class="row mt-2 mb-2">
+    <div class="col-auto border border-dark">Количество записей: {{ statistics.count }}</div>
+    <div class="col-auto border border-dark">Среднее id в записях: {{ statistics.avg }}</div>
+    <div class="col-auto border border-dark"> Минимальное id в записях:{{ statistics.min }}</div>
+    <div class="col-auto border border-dark"> Максимальное id в записях: {{ statistics.max }}</div>
+  </div>
   <div class="row">
     <div v-for="item in fractions" class="fraction-item card m-2" style="width: 18rem;">
       <div class="card-title ms-4">Название: {{ item.name }}</div>
