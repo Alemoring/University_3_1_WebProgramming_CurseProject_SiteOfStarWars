@@ -2,6 +2,8 @@
 import { computed, onBeforeMount, ref } from 'vue'
 import axios from "axios"
 import Cookies from 'js-cookie'
+import { storeToRefs } from "pinia"
+import useUserProfileStore from '@/stores/UserProfileStore'
 
 const starships = ref([])
 const starshipToAdd = ref({})
@@ -10,6 +12,13 @@ const starshipPictureRef = ref()
 const starshipPictureEditRef = ref()
 const starshipAddImageURL = ref()
 const starshipEditImageURL = ref()
+
+const userProfileStore = useUserProfileStore()
+const{
+	is_authenticated,
+  is_superuser,
+	username
+} = storeToRefs(userProfileStore) 
 
 async function fetchStarships() {
   const r = await axios.get('/api/starships/')

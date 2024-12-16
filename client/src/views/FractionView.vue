@@ -47,8 +47,8 @@ onBeforeMount(async () => {
 </script>
 
 <template>
-  <div>
-    <div v-for="item in fractions" class="fraction-item card" style="width: 18rem;">
+  <div class="row">
+    <div v-for="item in fractions" class="fraction-item card m-2" style="width: 18rem;">
       <div class="card-title ms-4">Название: {{ item.name }}</div>
       <div class="card-text ms-4">Период существования: {{ item.periodInLive }}</div>
       <div class="mt-2 mb-2 ms-4" style="display: flex; justify-content: space-between;">

@@ -22,7 +22,9 @@ from django.conf.urls.static import static
 from starwars import views
 
 from rest_framework.routers import DefaultRouter
-from starwars.api import CharactersViewset, StarshipViewset, RaceViewset, PlanetViewSet, FractionViewSet, UserProfileViewSet
+from starwars.api import CharactersViewset, StarshipViewset, RaceViewset, PlanetViewSet, FractionViewSet, UserProfileViewSet, UsersViewset
+
+from django.views.decorators.csrf import csrf_exempt
 
 router = DefaultRouter()
 router.register("characters", CharactersViewset, basename="Characters")
@@ -30,7 +32,8 @@ router.register("starships", StarshipViewset, basename="Starships")
 router.register("races", RaceViewset, basename="Races")
 router.register("planets", PlanetViewSet, basename="Planets")
 router.register("fractions", FractionViewSet, basename="Fractions")
-router.register("user", UserProfileViewSet, basename="Users")
+router.register("user", UserProfileViewSet, basename="User")
+router.register("users", UsersViewset, basename="Users")
 
 urlpatterns = [
     path('', views.ShowCharactersView.as_view()),

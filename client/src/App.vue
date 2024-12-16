@@ -9,7 +9,6 @@ const {
   is_authenticated,
   username
 } = storeToRefs(userProfileStore)
-console.log(useUserProfileStore)
 async function onClick() {
   await axios.post("/accounts/logout/")
   document.location.reload()

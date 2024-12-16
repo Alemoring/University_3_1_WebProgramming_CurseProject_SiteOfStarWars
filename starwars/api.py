@@ -3,8 +3,9 @@ from rest_framework.viewsets import GenericViewSet
 from rest_framework import mixins, viewsets
 from rest_framework.decorators import action
 from starwars.models import Character, Starship, Race, Fraction, Planet
-from starwars.serializers import CharacterSerializer, StarshipDeleteSerializer, StarshipSerializer, CharacterCreateSerializer
+from starwars.serializers import CharacterSerializer, StarshipDeleteSerializer, StarshipSerializer, CharacterCreateSerializer, UserSerializer
 from starwars.serializers import RaceSerializer, RaceCreateSerializer, FractionSerializer, PlanetSerializer
+from django.contrib.auth.models import User
 
 class UserProfileViewSet(GenericViewSet):
 	@action(url_path="info", detail=False, methods=["GET"])
@@ -19,6 +20,10 @@ class UserProfileViewSet(GenericViewSet):
 				"name" : user.username
 			})
 		return Response(data)
+     
+class UsersViewset(mixins.ListModelMixin, GenericViewSet):
+     queryset = User.objects.all()
+     serializer_class = UserSerializer
 
 class CharactersViewset(mixins.ListModelMixin, 
                         mixins.CreateModelMixin, 
@@ -79,9 +84,6 @@ class RaceViewset(mixins.ListModelMixin,
         return self.serializer_class
     def get_queryset(self):
         qs = super().get_queryset()
-        
-        
-
         return qs
 
 class FractionViewSet(mixins.ListModelMixin, 
