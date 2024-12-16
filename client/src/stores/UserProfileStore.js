@@ -7,7 +7,7 @@ const useUserProfileStore = defineStore("UserProfileStore", () => {
 	const is_superuser = ref()
 
 	onBeforeMount(async () => {
-		const r = await axios.get("api/user/info/")
+		const r = await axios.get("api/user/check-login/")
 		is_authenticated.value = r.data.is_authenticated
 		username.value = r.data.name
 		is_superuser.value = r.data.is_superuser

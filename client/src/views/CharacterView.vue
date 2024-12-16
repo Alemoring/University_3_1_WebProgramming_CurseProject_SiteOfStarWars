@@ -26,13 +26,13 @@ const fractions = ref([])
 const characterToAdd = ref({})
 const characterToEdit = ref({})
 
-const statistics = ref([]) 
+const statistics = ref([])
 
 async function fetchCharacters(user) {
   var r1
-  if(user != null){
-    r1 = await axios.get("/api/characters/?username="+user)
-  }else{
+  if (user != null) {
+    r1 = await axios.get("/api/characters/?username=" + user)
+  } else {
     r1 = await axios.get("/api/characters/")
   }
   characters.value = r1.data
@@ -76,36 +76,42 @@ async function onCharacterEditClick(character) {
 }
 
 async function onUpdateCharacter() {
-  const formData = new FormData()
-  if (characterPictureEditRef.value.files[0] != null) {
-    formData.append('picture', characterPictureEditRef.value.files[0])
+  const rt = await axios.get("/api/user/otp-status/")
+  const otpStatus = rt.data
+  if (otpStatus["otp_good"]) {
+    const formData = new FormData()
+    if (characterPictureEditRef.value.files[0] != null) {
+      formData.append('picture', characterPictureEditRef.value.files[0])
 
-    formData.set('name', characterToEdit.value.name)
-    formData.set("race", characterToEdit.value.race)
-    formData.set("fraction", characterToEdit.value.fraction)
+      formData.set('name', characterToEdit.value.name)
+      formData.set("race", characterToEdit.value.race)
+      formData.set("fraction", characterToEdit.value.fraction)
 
-    await axios.put(`/api/characters/${characterToEdit.value.id}/`, formData, {
-      headers: {
-        'Content-Type': 'multipart/form-data'
-      }
-    });
-  } else if (characterToEdit.value.picture != null) {
-    await axios.put(`/api/characters/${characterToEdit.value.id}/`, {
-      'name': characterToEdit.value.name,
-      "race": characterToEdit.value.race,
-      "fraction": characterToEdit.value.fraction
-    });
+      await axios.put(`/api/characters/${characterToEdit.value.id}/`, formData, {
+        headers: {
+          'Content-Type': 'multipart/form-data'
+        }
+      });
+    } else if (characterToEdit.value.picture != null) {
+      await axios.put(`/api/characters/${characterToEdit.value.id}/`, {
+        'name': characterToEdit.value.name,
+        "race": characterToEdit.value.race,
+        "fraction": characterToEdit.value.fraction
+      });
+    }
+    else {
+      await axios.put(`/api/characters/${characterToEdit.value.id}/`, {
+        'name': characterToEdit.value.name,
+        "race": characterToEdit.value.race,
+        "fraction": characterToEdit.value.fraction,
+        "picture": null
+      });
+    }
+    characterPictureEditRef.value = null
+    await fetchCharacters();
+  }else{
+    alert("Пройдите двойную аутентификацию")
   }
-  else {
-    await axios.put(`/api/characters/${characterToEdit.value.id}/`, {
-      'name': characterToEdit.value.name,
-      "race": characterToEdit.value.race,
-      "fraction": characterToEdit.value.fraction,
-      "picture": null
-    });
-  }
-  characterPictureEditRef.value = null
-  await fetchCharacters();
 }
 
 async function onCharacterAdd() {

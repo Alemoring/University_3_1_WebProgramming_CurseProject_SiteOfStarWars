@@ -21,10 +21,14 @@ async function onPlanetEditClick(planet) {
 }
 
 async function onUpdatePlanet() {
-  await axios.put(`/api/planets/${planetToEdit.value.id}/`, {
-    ...planetToEdit.value,
-  });
-  await fetchPlanets();
+  const rt = await axios.get("/api/user/otp-status/")
+  const otpStatus = rt.data
+  if (otpStatus["otp_good"]) {
+    await axios.put(`/api/planets/${planetToEdit.value.id}/`, {
+      ...planetToEdit.value,
+    });
+    await fetchPlanets();
+  }
 }
 
 async function onPlanetAdd() {

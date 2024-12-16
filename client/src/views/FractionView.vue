@@ -7,7 +7,7 @@ const fractions = ref([])
 const fractionToAdd = ref({})
 const fractionToEdit = ref({})
 
-const statistics = ref([]) 
+const statistics = ref([])
 
 async function fetchFractions() {
   const r = await axios.get('/api/fractions/')
@@ -21,10 +21,14 @@ async function onFractionEditClick(fraction) {
 }
 
 async function onUpdateFraction() {
-  await axios.put(`/api/fractions/${fractionToEdit.value.id}/`, {
-    ...fractionToEdit.value,
-  });
-  await fetchFractions();
+  const rt = await axios.get("/api/user/otp-status/")
+  const otpStatus = rt.data
+  if (otpStatus["otp_good"]) {
+    await axios.put(`/api/fractions/${fractionToEdit.value.id}/`, {
+      ...fractionToEdit.value,
+    });
+    await fetchFractions();
+  }
 }
 
 async function onFractionAdd() {

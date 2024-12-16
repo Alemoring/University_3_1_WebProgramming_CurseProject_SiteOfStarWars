@@ -26,10 +26,14 @@ async function onRaceEditClick(race) {
 }
 
 async function onUpdateRace() {
-  await axios.put(`/api/races/${raceToEdit.value.id}/`, {
-    ...raceToEdit.value,
-  });
-  await fetchRaces();
+  const rt = await axios.get("/api/user/otp-status/")
+  const otpStatus = rt.data
+  if (otpStatus["otp_good"]) {
+    await axios.put(`/api/races/${raceToEdit.value.id}/`, {
+      ...raceToEdit.value,
+    });
+    await fetchRaces();
+  }
 }
 
 async function onRaceAdd() {

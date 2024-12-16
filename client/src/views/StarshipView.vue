@@ -20,17 +20,17 @@ const statistics = ref([])
 const users = ref([])
 
 const userProfileStore = useUserProfileStore()
-const{
-	is_authenticated,
+const {
+  is_authenticated,
   is_superuser,
-	username
-} = storeToRefs(userProfileStore) 
+  username
+} = storeToRefs(userProfileStore)
 
 async function fetchStarships(user) {
   var r
-  if(user != null){
-    r = await axios.get("/api/starships/?username="+user)
-  }else{
+  if (user != null) {
+    r = await axios.get("/api/starships/?username=" + user)
+  } else {
     r = await axios.get("/api/starships/")
   }
   starships.value = r.data
@@ -69,36 +69,40 @@ async function onStarshipEditClick(starship) {
 }
 
 async function onUpdateStarship() {
-  const formData = new FormData()
-  if (starshipPictureEditRef.value.files[0] != null) {
-    formData.append('picture', starshipPictureEditRef.value.files[0])
+  const rt = await axios.get("/api/user/otp-status/")
+  const otpStatus = rt.data
+  if (otpStatus["otp_good"]) {
+    const formData = new FormData()
+    if (starshipPictureEditRef.value.files[0] != null) {
+      formData.append('picture', starshipPictureEditRef.value.files[0])
 
-    formData.set('name', starshipToEdit.value.name)
-    formData.set("type", starshipToEdit.value.type)
-    formData.set("crew", starshipToEdit.value.crew)
+      formData.set('name', starshipToEdit.value.name)
+      formData.set("type", starshipToEdit.value.type)
+      formData.set("crew", starshipToEdit.value.crew)
 
-    await axios.put(`/api/starships/${starshipToEdit.value.id}/`, formData, {
-      headers: {
-        'Content-Type': 'multipart/form-data'
-      }
-    });
-  } else if (starshipToEdit.value.picture != null) {
-    await axios.put(`/api/starships/${starshipToEdit.value.id}/`, {
-      'name': starshipToEdit.value.name,
-      "type": starshipToEdit.value.type,
-      "crew": starshipToEdit.value.crew
-    });
+      await axios.put(`/api/starships/${starshipToEdit.value.id}/`, formData, {
+        headers: {
+          'Content-Type': 'multipart/form-data'
+        }
+      });
+    } else if (starshipToEdit.value.picture != null) {
+      await axios.put(`/api/starships/${starshipToEdit.value.id}/`, {
+        'name': starshipToEdit.value.name,
+        "type": starshipToEdit.value.type,
+        "crew": starshipToEdit.value.crew
+      });
+    }
+    else {
+      await axios.put(`/api/starships/${starshipToEdit.value.id}/`, {
+        'name': starshipToEdit.value.name,
+        "type": starshipToEdit.value.type,
+        "crew": starshipToEdit.value.crew,
+        "picture": null
+      });
+    }
+    starshipPictureEditRef.value = null
+    await fetchStarships();
   }
-  else {
-    await axios.put(`/api/starships/${starshipToEdit.value.id}/`, {
-      'name': starshipToEdit.value.name,
-      "type": starshipToEdit.value.type,
-      "crew": starshipToEdit.value.crew,
-      "picture": null
-    });
-  }
-  starshipPictureEditRef.value = null
-  await fetchStarships();
 }
 
 async function onStarshipAdd() {
@@ -163,8 +167,10 @@ onBeforeMount(async () => {
   </div>
   <div class="row">
     <div v-for="item in starships" class="starship-item card m-2" style="width: 18rem;">
-      <div v-show="item.picture" class="mt-3 mb-2" style="margin-left: auto; margin-right: auto;"><img :src="item.picture"
-        style="max-height: 200px; width: 16rem; border: 2px solid black; box-shadow: 0px 0px 5px 5px rgba(0, 0, 0, 0.4);" alt=""></div>
+      <div v-show="item.picture" class="mt-3 mb-2" style="margin-left: auto; margin-right: auto;"><img
+          :src="item.picture"
+          style="max-height: 200px; width: 16rem; border: 2px solid black; box-shadow: 0px 0px 5px 5px rgba(0, 0, 0, 0.4);"
+          alt=""></div>
       <div class="card-title ms-4">Название: {{ item.name }}</div>
       <div class="card-text ms-4">Тип: {{ item.type }}</div>
       <div class="card-text ms-4">Команда: {{ item.crew }}</div>
