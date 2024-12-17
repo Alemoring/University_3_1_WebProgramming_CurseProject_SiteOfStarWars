@@ -102,6 +102,8 @@ async function onUpdateStarship() {
     }
     starshipPictureEditRef.value = null
     await fetchStarships();
+  }else{
+    alert("Пройдите двойную аутентификацию")
   }
 }
 

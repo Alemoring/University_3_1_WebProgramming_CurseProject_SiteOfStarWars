@@ -28,6 +28,8 @@ async function onUpdatePlanet() {
       ...planetToEdit.value,
     });
     await fetchPlanets();
+  }else{
+    alert("Пройдите двойную аутентификацию")
   }
 }
 
@@ -57,7 +59,7 @@ onBeforeMount(async () => {
 <template>
   <div class="row mt-2 mb-2">
     <div class="col-auto border border-dark">Количество записей: {{ statistics.count }}</div>
-    <div class="col-auto border border-dark">Среднее id в записях: {{ statistics.avg }}</div>
+    <div class="col-auto border border-dark">Средняя популяция на планетах: {{ statistics.avg }}</div>
     <div class="col-auto border border-dark"> Минимальное id в записях:{{ statistics.min }}</div>
     <div class="col-auto border border-dark"> Максимальное id в записях: {{ statistics.max }}</div>
   </div>

@@ -1,5 +1,5 @@
 <script setup>
-import { computed, onBeforeMount, onMounted, ref } from 'vue'
+import { computed, watch, onBeforeMount, onMounted, ref } from 'vue'
 import axios from "axios"
 import Cookies from 'js-cookie'
 import { storeToRefs } from "pinia"
@@ -15,6 +15,8 @@ const {
 const users = ref([])
 
 const userFilter = ref()
+const raceFilter = ref()
+const fractionFilter = ref()
 
 const characters = ref([])
 const characterPictureRef = ref()
@@ -29,10 +31,25 @@ const characterToEdit = ref({})
 const statistics = ref([])
 
 async function fetchCharacters(user) {
+  if(raceFilter.value != undefined){
+    console.log(raceFilter.value.id)
+  }
+  if(fractionFilter.value != undefined){
+    console.log("fraction= " + fractionFilter.value.id)
+  }
   var r1
-  if (user != null) {
+  if (user != null && raceFilter.value == undefined && fractionFilter.value == undefined) {
     r1 = await axios.get("/api/characters/?username=" + user)
-  } else {
+  }else if(user != undefined && raceFilter.value != undefined && fractionFilter.value == undefined){
+    r1 = await axios.get("/api/characters/?username=" + user + "&race=" + raceFilter.value.id)
+  }else if(user != undefined && raceFilter.value == undefined && fractionFilter.value != undefined){
+    r1 = await axios.get("/api/characters/?username=" + user + "&fraction=" + fractionFilter.value.id)
+  }else if(user == undefined && raceFilter.value != undefined && fractionFilter.value == undefined){
+    r1 = await axios.get("/api/characters/?race=" + raceFilter.value.id)
+  }else if(user == undefined && raceFilter.value == undefined && fractionFilter.value != undefined){
+    r1 = await axios.get("/api/characters/?fraction=" + fractionFilter.value.id)
+  }
+  else {
     r1 = await axios.get("/api/characters/")
   }
   characters.value = r1.data
@@ -46,10 +63,22 @@ async function fetchCharacters(user) {
   statistics.value = r5.data
 }
 
+watch([userFilter, raceFilter, fractionFilter], (newValues, prevValues) => {
+  console.log(newValues, prevValues)
+})
+
 async function onFilterUser(user) {
+  if(raceFilter.value == "Все"){
+    raceFilter.value = undefined
+  }
+  if(fractionFilter.value == "Все"){
+    fractionFilter.value = undefined
+  }
   await fetchCharacters()
   if (user != -1) {
     await fetchCharacters(user + 1)
+  }else{
+    user = undefined
   }
 }
 
@@ -109,7 +138,7 @@ async function onUpdateCharacter() {
     }
     characterPictureEditRef.value = null
     await fetchCharacters();
-  }else{
+  } else {
     alert("Пройдите двойную аутентификацию")
   }
 }
@@ -161,6 +190,24 @@ onBeforeMount(async () => {
           @change="onFilterUser(users.findIndex((item) => item.username == userFilter.username))">
           <option selected>Все</option>
           <option v-for="n in users" :value="n">{{ n.username }}</option>
+        </select>
+        <label for="floatingSelect">Юзер</label>
+      </div>
+    </div>
+    <div class="col-auto ">
+      <select id="floatingSelect" class="form-select" v-model="raceFilter"
+        @change="onFilterUser(users.findIndex((item) => item.username == userFilter.username))">
+        <option selected>Все</option>
+        <option v-for="n in races" :value="n">{{ n.name }}</option>
+      </select>
+      <label for="floatingSelect">Расса</label>
+    </div>
+    <div class="col-auto ">
+      <div v-if="userProfileStore.is_superuser" class="form-floating">
+        <select id="floatingSelect" class="form-select" v-model="fractionFilter"
+          @change="onFilterUser(users.findIndex((item) => item.username == userFilter.username))">
+          <option selected>Все</option>
+          <option v-for="n in fractions" :value="n">{{ n.name }}</option>
         </select>
         <label for="floatingSelect">Юзер</label>
       </div>

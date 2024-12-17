@@ -33,6 +33,8 @@ async function onUpdateRace() {
       ...raceToEdit.value,
     });
     await fetchRaces();
+  }else{
+    alert("Пройдите двойную аутентификацию")
   }
 }
 

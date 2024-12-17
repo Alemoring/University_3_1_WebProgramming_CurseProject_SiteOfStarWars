@@ -139,7 +139,21 @@ class CharactersViewset(mixins.ListModelMixin,
         
         # Фильтрация по юзеру с помощью параметров url
         username = self.request.query_params.get('username')
-        if username is not None:
+        race = self.request.query_params.get('race')
+        fraction = self.request.query_params.get('fraction')
+        if username is not None and race is not None and fraction is not None:
+            qs = qs.filter(user=username, race=race, fraction=fraction)
+        elif username is not None and race is not None and fraction is None:
+            qs = qs.filter(user=username, race=race)
+        elif username is not None and race is None and fraction is not None:
+            qs = qs.filter(user=username, fraction=fraction)
+        elif username is None and race is not None and fraction is not None:
+            qs = qs.filter(fraction=fraction, race=race)
+        elif username is None and race is None and fraction is not None:
+            qs = qs.filter(fraction=fraction)
+        elif username is None and race is not None and fraction is None:
+            qs = qs.filter(race=race)
+        elif username is not None and race is None and fraction is None:
             qs = qs.filter(user=username)
         # фильтруем по текущему юзеру, если текущий пользователь не супер
         user = self.request.user
@@ -285,7 +299,7 @@ class PlanetViewSet(mixins.ListModelMixin,
     def get_stats(self, request, *args, **kwargs):
         stats = Planet.objects.aggregate(
             count=Count("*"),
-            avg=Avg("id"),
+            avg=Avg("population"),
             max=Max("id"),
             min=Min("id")
         )

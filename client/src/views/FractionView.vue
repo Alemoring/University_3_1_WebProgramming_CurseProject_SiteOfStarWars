@@ -28,6 +28,8 @@ async function onUpdateFraction() {
       ...fractionToEdit.value,
     });
     await fetchFractions();
+  }else{
+    alert("Пройдите двойную аутентификацию")
   }
 }
 
