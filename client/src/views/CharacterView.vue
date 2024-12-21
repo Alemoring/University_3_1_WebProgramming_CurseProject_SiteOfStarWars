@@ -4,6 +4,7 @@ import axios from "axios"
 import Cookies from 'js-cookie'
 import { storeToRefs } from "pinia"
 import useUserProfileStore from '@/stores/UserProfileStore'
+import { useFetch } from '@vueuse/core'
 
 const userProfileStore = useUserProfileStore()
 const {
@@ -15,8 +16,6 @@ const {
 const users = ref([])
 
 const userFilter = ref()
-const raceFilter = ref()
-const fractionFilter = ref()
 
 const characters = ref([])
 const characterPictureRef = ref()
@@ -30,26 +29,20 @@ const characterToEdit = ref({})
 
 const statistics = ref([])
 
+const factCount = ref()
+const factMin = ref()
+const factMax = ref()
+const number = ref(1337)
+
+const url = computed(() => {
+  return 'http://numbersapi.com/' + number.value + "/"
+})
+
 async function fetchCharacters(user) {
-  if(raceFilter.value != undefined){
-    console.log(raceFilter.value.id)
-  }
-  if(fractionFilter.value != undefined){
-    console.log("fraction= " + fractionFilter.value.id)
-  }
   var r1
-  if (user != null && raceFilter.value == undefined && fractionFilter.value == undefined) {
+  if (user != null) {
     r1 = await axios.get("/api/characters/?username=" + user)
-  }else if(user != undefined && raceFilter.value != undefined && fractionFilter.value == undefined){
-    r1 = await axios.get("/api/characters/?username=" + user + "&race=" + raceFilter.value.id)
-  }else if(user != undefined && raceFilter.value == undefined && fractionFilter.value != undefined){
-    r1 = await axios.get("/api/characters/?username=" + user + "&fraction=" + fractionFilter.value.id)
-  }else if(user == undefined && raceFilter.value != undefined && fractionFilter.value == undefined){
-    r1 = await axios.get("/api/characters/?race=" + raceFilter.value.id)
-  }else if(user == undefined && raceFilter.value == undefined && fractionFilter.value != undefined){
-    r1 = await axios.get("/api/characters/?fraction=" + fractionFilter.value.id)
-  }
-  else {
+  } else {
     r1 = await axios.get("/api/characters/")
   }
   characters.value = r1.data
@@ -61,23 +54,25 @@ async function fetchCharacters(user) {
   users.value = r4.data
   const r5 = await axios.get("/api/characters/stats/")
   statistics.value = r5.data
+
+  number.value = statistics.value.count
+  const { isFetching, error, data } = await useFetch(url, { refetch: true })
+  factCount.value = data.value
+
+  number.value = statistics.value.min
+  await useFetch(url)
+  factMin.value = data.value
+
+  number.value = statistics.value.max
+  await useFetch(url)
+  factMax.value = data.value
 }
 
-watch([userFilter, raceFilter, fractionFilter], (newValues, prevValues) => {
-  console.log(newValues, prevValues)
-})
-
 async function onFilterUser(user) {
-  if(raceFilter.value == "Все"){
-    raceFilter.value = undefined
-  }
-  if(fractionFilter.value == "Все"){
-    fractionFilter.value = undefined
-  }
   await fetchCharacters()
   if (user != -1) {
     await fetchCharacters(user + 1)
-  }else{
+  } else {
     user = undefined
   }
 }
@@ -194,31 +189,15 @@ onBeforeMount(async () => {
         <label for="floatingSelect">Юзер</label>
       </div>
     </div>
-    <div class="col-auto ">
-      <select id="floatingSelect" class="form-select" v-model="raceFilter"
-        @change="onFilterUser(users.findIndex((item) => item.username == userFilter.username))">
-        <option selected>Все</option>
-        <option v-for="n in races" :value="n">{{ n.name }}</option>
-      </select>
-      <label for="floatingSelect">Расса</label>
-    </div>
-    <div class="col-auto ">
-      <div v-if="userProfileStore.is_superuser" class="form-floating">
-        <select id="floatingSelect" class="form-select" v-model="fractionFilter"
-          @change="onFilterUser(users.findIndex((item) => item.username == userFilter.username))">
-          <option selected>Все</option>
-          <option v-for="n in fractions" :value="n">{{ n.name }}</option>
-        </select>
-        <label for="floatingSelect">Юзер</label>
-      </div>
-    </div>
   </div>
   <div class="row mt-2 mb-2">
-    <div class="col-auto border border-dark">Количество записей: {{ statistics.count }}</div>
-    <div class="col-auto border border-dark">Среднее id в записях: {{ statistics.avg }}</div>
-    <div class="col-auto border border-dark"> Минимальное id в записях:{{ statistics.min }}</div>
-    <div class="col-auto border border-dark"> Максимальное id в записях: {{ statistics.max }}</div>
+    <div class="col border border-dark">Количество записей: {{ statistics.count }} <br> Факт: {{
+      factCount }}</div>
+    <div class="col-2 border border-dark">Среднее id в записях: {{ statistics.avg }}</div>
+    <div class="col border border-dark"> Минимальное id в записях:{{ statistics.min }} <br> Факт: {{ factMin }}</div>
+    <div class="col border border-dark"> Максимальное id в записях: {{ statistics.max }} <br> Факт: {{ factMax }}</div>
   </div>
+
   <div class="row">
     <div v-for="item in characters" class="character-item card m-2" style="width: 18rem;">
       <div v-show="item.picture" class="mt-3 mb-2" style="margin-left: auto; margin-right: auto;"><img
